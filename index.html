@@ -43,14 +43,19 @@
       opacity: 0.9;
     }
 
+    /* Grüne Song-Anzeige */
     .song-display {
       font-size: 14px;
       color: #00cc99;
       font-weight: 700;
       margin-bottom: 20px;
+      height: 20px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      padding: 0 10px;
     }
 
-    /* Controls nebeneinander angeordnet */
     .controls {
       display: flex;
       justify-content: center;
@@ -74,7 +79,6 @@
       transform: scale(1.08);
     }
 
-    /* Play-Button links: Hintergrund Grün (#00cc99), Symbol Schwarz */
     #playBtn {
       background-color: #00cc99;
       border: none;
@@ -83,16 +87,14 @@
       fill: #000000;
       width: 26px;
       height: 26px;
-      margin-left: 4px; /* Zentriert die Dreiecksspitze optisch */
+      margin-left: 4px;
     }
 
-    /* Stop-Button rechts: Transparent, Umrandung Gold (#b7a359) */
     #stopBtn {
       background-color: transparent;
       border: 2px solid #b7a359;
     }
     
-    /* Quadratisches Stopsymbol innen in Gold (#b7a359) */
     .stop-icon {
       width: 20px;
       height: 20px;
@@ -106,40 +108,59 @@
   <div class="player-container">
     <h2>HARD ROCK PALACE</h2>
     <div class="station-sub">HRP - The place to be.</div>
-    <div class="song-display">HARD ROCK PALACE on air!</div>
+    
+    <!-- Das Textfeld für den Live-Songtitel -->
+    <div id="currentSong" class="song-display">Verbinde mit laut.fm/hrp...</div>
     
     <div class="controls">
-      <!-- PLAY BUTTON LINKS -->
       <button id="playBtn" class="btn" onclick="playRadio()">
         <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
       </button>
-      
-      <!-- STOP BUTTON RECHTS -->
       <button id="stopBtn" class="btn" onclick="stopRadio()">
         <div class="stop-icon"></div>
       </button>
     </div>
   </div>
 
-  <!-- Nativer HTML5-Audiostream direkt mit Ihrer laut.fm-Leitung verknüpft -->
-  <audio id="audioStream" src="https://stream.laut.fm/hrp" preload="auto"></audio>
+  <audio id="audioStream" src="https://laut.fm" preload="auto"></audio>
 
   <script>
     var audio = document.getElementById('audioStream');
+    var apiUrl = "https://laut.fm";
 
     function playRadio() {
       audio.play().catch(function(error) {
-        console.log("Wiedergabe blockiert oder Fehler:", error);
+        console.log("Fehler beim Abspielen:", error);
       });
     }
 
     function stopRadio() {
       audio.pause();
-      // Setzt den Stream komplett zurück, um Datenvolumen zu sparen und beim nächsten Play live einzusteigen
       audio.src = "";
-      audio.src = "https://stream.laut.fm/hrp";
+      audio.src = "https://laut.fm";
       audio.load();
     }
+
+    // Holt den aktuellen Songtitel direkt aus Ihrem laut.fm-Datenstrom
+    function updateSongInfo() {
+      fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+          if (data && data.title) {
+            var artistName = data.artist ? data.artist : "HARD ROCK PALACE";
+            document.getElementById('currentSong').innerText = artistName + " - " + data.title;
+          } else {
+            document.getElementById('currentSong').innerText = "Live Stream aktiv";
+          }
+        })
+        .catch(error => {
+          document.getElementById('currentSong').innerText = "HARD ROCK PALACE on air!";
+        });
+    }
+
+    // Sofort beim Laden ausführen und alle 10 Sekunden wiederholen
+    updateSongInfo();
+    setInterval(updateSongInfo, 10000);
   </script>
 </body>
 </html>
