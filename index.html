@@ -90,7 +90,7 @@
     }
 
     #stopBtn {
-      background-color: transparent;
+          background-color: transparent;
       border: 2px solid #00cc99;
     }
     
@@ -108,7 +108,8 @@
     <h2>HARD ROCK PALACE</h2>
     <div class="station-sub">HRP - The place to be.</div>
     
-    <div id="currentSong" class="song-display">Verbinde mit stream.laut.fm/hrp...</div>
+    <!-- Hier wird das Lied live in Grün angezeigt -->
+    <div id="currentSong" class="song-display">Verbinde mit laut.fm/hrp...</div>
     
     <div class="controls">
       <button id="playBtn" class="btn" onclick="playRadio()">
@@ -120,33 +121,36 @@
     </div>
   </div>
 
-  <!-- Nativer Audio-Baustein -->
+  <!-- Nativer Audio-Baustein OHNE blockierende Zusatzbefehle -->
   <audio id="audioStream"></audio>
 
   <script>
     var audio = document.getElementById('audioStream');
+    
+    // HIER steht nun bombenfest Ihre korrekte Audio-Leitung!
     var streamUrl = "https://stream.laut.fm/hrp";
-    var apiUrl = "https://stream.laut.fm/hrp";
+    
+    // Die offizielle Datenschnittstelle für den Songtext
+    var apiUrl = "https://api.laut.fm/station/hrp/current_song";
 
-    // Fehlerbehebung für den Ton-Start
     function playRadio() {
-      // Erzwingt das frische Neuladen des Audiostreams direkt beim Klick
+      // Lädt den Stream absolut frisch bei jedem Klick
       audio.src = streamUrl;
       audio.load();
       
       var playPromise = audio.play();
       if (playPromise !== undefined) {
         playPromise.then(function() {
-          console.log("Wiedergabe erfolgreich.");
+          console.log("Stream erfolgreich gestartet.");
         }).catch(function(error) {
-          console.log("Fehler beim Abspielen:", error);
+          console.log("Browser blockiert automatisches Abspielen:", error);
         });
       }
     }
 
     function stopRadio() {
       audio.pause();
-      audio.src = ""; // Kappt die Verbindung komplett
+      audio.src = ""; // Kappt die Datenleitung vollständig
     }
 
     function updateSongInfo() {
