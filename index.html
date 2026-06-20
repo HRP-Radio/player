@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HARD ROCK PALACE - Player</title>
+  <style>
+    @import url('https://googleapis.com');
+    
+    body, html {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #000000;
+      font-family: 'Lexend', sans-serif !important;
+      color: #b7a35a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+      user-select: none;
+    }
+
+    .player-container {
+      padding: 20px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    h2 {
+      margin: 0 0 3px 0;
+      font-size: 24px;
+      letter-spacing: 1px;
+      color: #b7a35a;
+      font-weight: 700;
+    }
+
+    .station-sub {
+      font-size: 13px;
+      color: #ffffff;
+      margin-bottom: 15px;
+      opacity: 0.9;
+    }
+
+    .song-display {
+      font-size: 14px;
+      color: #00cc99;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    /* Controls nebeneinander angeordnet */
+    .controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 25px;
+    }
+
+    .btn {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: transform 0.2s;
+      box-sizing: border-box;
+    }
+
+    .btn:hover {
+      transform: scale(1.08);
+    }
+
+    /* Play-Button links: Hintergrund Grün (#00cc99), Symbol Schwarz */
+    #playBtn {
+      background-color: #00cc99;
+      border: none;
+    }
+    #playBtn svg {
+      fill: #000000;
+      width: 26px;
+      height: 26px;
+      margin-left: 4px; /* Zentriert die Dreiecksspitze optisch */
+    }
+
+    /* Stop-Button rechts: Transparent, Umrandung Gold (#b7a359) */
+    #stopBtn {
+      background-color: transparent;
+      border: 2px solid #b7a359;
+    }
+    
+    /* Quadratisches Stopsymbol innen in Gold (#b7a359) */
+    .stop-icon {
+      width: 20px;
+      height: 20px;
+      background-color: #b7a359;
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="player-container">
+    <h2>HARD ROCK PALACE</h2>
+    <div class="station-sub">HRP - The place to be.</div>
+    <div class="song-display">HARD ROCK PALACE on air!</div>
+    
+    <div class="controls">
+      <!-- PLAY BUTTON LINKS -->
+      <button id="playBtn" class="btn" onclick="playRadio()">
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+      
+      <!-- STOP BUTTON RECHTS -->
+      <button id="stopBtn" class="btn" onclick="stopRadio()">
+        <div class="stop-icon"></div>
+      </button>
+    </div>
+  </div>
+
+  <!-- Nativer HTML5-Audiostream direkt mit Ihrer laut.fm-Leitung verknüpft -->
+  <audio id="audioStream" src="https://stream.laut.fm/hrp" preload="auto"></audio>
+
+  <script>
+    var audio = document.getElementById('audioStream');
+
+    function playRadio() {
+      audio.play().catch(function(error) {
+        console.log("Wiedergabe blockiert oder Fehler:", error);
+      });
+    }
+
+    function stopRadio() {
+      audio.pause();
+      // Setzt den Stream komplett zurück, um Datenvolumen zu sparen und beim nächsten Play live einzusteigen
+      audio.src = "";
+      audio.src = "https://stream.laut.fm/hrp";
+      audio.load();
+    }
+  </script>
+</body>
+</html>
