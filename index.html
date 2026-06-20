@@ -158,7 +158,7 @@
         .then(response => response.json())
         .then(data => {
           if (data && data.title) {
-            var artistName = data.artist ? data.artist : "HARD ROCK PALACE";
+            var artistName = (data.artist && data.artist.name) ? data.artist.name : "HARD ROCK PALACE";
             document.getElementById('currentSong').innerText = artistName + " - " + data.title;
           } else {
             document.getElementById('currentSong').innerText = "Live Stream aktiv";
