@@ -43,7 +43,6 @@
       opacity: 0.9;
     }
 
-    /* Grüne Song-Anzeige */
     .song-display {
       font-size: 14px;
       color: #00cc99;
@@ -92,13 +91,13 @@
 
     #stopBtn {
       background-color: transparent;
-      border: 2px solid #b7a359;
+      border: 2px solid #00cc99;
     }
     
     .stop-icon {
       width: 20px;
       height: 20px;
-      background-color: #b7a359;
+      background-color: #00cc99;
       border-radius: 2px;
     }
   </style>
@@ -109,8 +108,7 @@
     <h2>HARD ROCK PALACE</h2>
     <div class="station-sub">HRP - The place to be.</div>
     
-    <!-- Das Textfeld für den Live-Songtitel -->
-    <div id="currentSong" class="song-display">Verbinde mit laut.fm/hrp...</div>
+    <div id="currentSong" class="song-display">Verbinde mit stream.laut.fm/hrp...</div>
     
     <div class="controls">
       <button id="playBtn" class="btn" onclick="playRadio()">
@@ -122,26 +120,35 @@
     </div>
   </div>
 
-  <audio id="audioStream" src="https://laut.fm" preload="auto"></audio>
+  <!-- Nativer Audio-Baustein -->
+  <audio id="audioStream"></audio>
 
   <script>
     var audio = document.getElementById('audioStream');
-    var apiUrl = "https://laut.fm";
+    var streamUrl = "https://stream.laut.fm/hrp";
+    var apiUrl = "https://stream.laut.fm/hrp";
 
+    // Fehlerbehebung für den Ton-Start
     function playRadio() {
-      audio.play().catch(function(error) {
-        console.log("Fehler beim Abspielen:", error);
-      });
+      // Erzwingt das frische Neuladen des Audiostreams direkt beim Klick
+      audio.src = streamUrl;
+      audio.load();
+      
+      var playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.then(function() {
+          console.log("Wiedergabe erfolgreich.");
+        }).catch(function(error) {
+          console.log("Fehler beim Abspielen:", error);
+        });
+      }
     }
 
     function stopRadio() {
       audio.pause();
-      audio.src = "";
-      audio.src = "https://laut.fm";
-      audio.load();
+      audio.src = ""; // Kappt die Verbindung komplett
     }
 
-    // Holt den aktuellen Songtitel direkt aus Ihrem laut.fm-Datenstrom
     function updateSongInfo() {
       fetch(apiUrl)
         .then(response => response.json())
@@ -158,7 +165,6 @@
         });
     }
 
-    // Sofort beim Laden ausführen und alle 10 Sekunden wiederholen
     updateSongInfo();
     setInterval(updateSongInfo, 10000);
   </script>
