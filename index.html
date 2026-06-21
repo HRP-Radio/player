@@ -1,36 +1,3 @@
-// GitHub Same-Domain-Bypass: Schützt vor doppelten Player-Fenstern
-(function() {
-    // Wir nutzen den BroadcastChannel. Damit können alle geöffneten Tabs/Fenster 
-    // deiner GitHub-Player-Seite blitzschnell miteinander sprechen.
-    var channel = new BroadcastChannel('hrp_player_channel');
-    
-    // Sobald dieses Fenster geladen wird, ruft es laut in den Raum: "Ich bin neu geöffnet worden!"
-    channel.postMessage('new_instance_opened');
-    
-    // Das Fenster lauscht, ob ein anderes Fenster etwas sagt
-    channel.onmessage = function(event) {
-        if (event.data === 'new_instance_opened') {
-            // WENN DIESER CODE HIER AUSGEFÜHRT WIRD, BEDEUTET DAS:
-            // Wir sind der ALTE, bereits spielende Player und hören, dass ein neues Fenster geöffnet wurde!
-            
-            // Wir sagen dem neuen Fenster sofort: "Schließ dich wieder, ich laufe schon!"
-            channel.postMessage('close_yourself');
-            
-            // Wir holen uns selbst wieder in den Vordergrund auf dem Mac!
-            window.focus(); 
-        }
-        
-        if (event.data === 'close_yourself') {
-            // WENN DIESER CODE HIER AUSGEFÜHRT WIRD, BEDEUTET DAS:
-            // Wir sind das lästige, zweite Fenster. Der alte Player hat uns befohlen, uns zu schließen!
-            window.close();
-        }
-    };
-})();
-
-
-
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -158,6 +125,38 @@
   <audio id="audioStream"></audio>
 
   <script>
+
+// GitHub Same-Domain-Bypass: Schützt vor doppelten Player-Fenstern
+(function() {
+    // Wir nutzen den BroadcastChannel. Damit können alle geöffneten Tabs/Fenster 
+    // deiner GitHub-Player-Seite blitzschnell miteinander sprechen.
+    var channel = new BroadcastChannel('hrp_player_channel');
+    
+    // Sobald dieses Fenster geladen wird, ruft es laut in den Raum: "Ich bin neu geöffnet worden!"
+    channel.postMessage('new_instance_opened');
+    
+    // Das Fenster lauscht, ob ein anderes Fenster etwas sagt
+    channel.onmessage = function(event) {
+        if (event.data === 'new_instance_opened') {
+            // WENN DIESER CODE HIER AUSGEFÜHRT WIRD, BEDEUTET DAS:
+            // Wir sind der ALTE, bereits spielende Player und hören, dass ein neues Fenster geöffnet wurde!
+            
+            // Wir sagen dem neuen Fenster sofort: "Schließ dich wieder, ich laufe schon!"
+            channel.postMessage('close_yourself');
+            
+            // Wir holen uns selbst wieder in den Vordergrund auf dem Mac!
+            window.focus(); 
+        }
+        
+        if (event.data === 'close_yourself') {
+            // WENN DIESER CODE HIER AUSGEFÜHRT WIRD, BEDEUTET DAS:
+            // Wir sind das lästige, zweite Fenster. Der alte Player hat uns befohlen, uns zu schließen!
+            window.close();
+        }
+    };
+})();
+
+      
     var audio = document.getElementById('audioStream');
     
     // HIER steht nun bombenfest Ihre korrekte Audio-Leitung!
