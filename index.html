@@ -30,7 +30,7 @@
 
     .logo-container {
       width: 100%;
-      max-width: 330px; /* Begrenzt die Breite passend zum Scheckkarten-Format */
+      max-width: 330px;
       margin: 0 auto 2px auto;
       display: flex;
       justify-content: center;
@@ -48,12 +48,11 @@
       color: #ffffff;
       margin-bottom: 15px;
       opacity: 0.9;
-      /* Richtet den Text am rechten Rand des Logo-Containers aus (unter PALACE) */
       max-width: 330px;
       margin-left: auto;
       margin-right: auto;
       text-align: right;
-      padding-right: 10px; /* Minimaler Abstand vom äußersten rechten Rand */
+      padding-right: 10px;
     }
 
     /* Der feste sichtbare Bereich für den Lauftext */
@@ -82,7 +81,6 @@
       0% { transform: translate3d(0, 0, 0); }
       100% { transform: translate3d(-100%, 0, 0); }
     }
-
 
     .controls {
       display: flex;
@@ -142,17 +140,15 @@
 <body>
 
   <div class="player-container">
-    <!-- Das Logo-Bild -->
     <div class="logo-container">
       <img src="https://i.ibb.co/jvJLP8xF/Hard-Rock-Palace-playerlogo.png" alt="HARD ROCK PALACE" class="logo-img">
     </div>
     
-    <!-- Rechtsbündig unter dem Wort PALACE platziert -->
     <div class="station-sub">HRP - The place to be.</div>
     
-    <!-- Hier wird das Lied live in Grün angezeigt -->
+    <!-- Modifiziertes Display für den CSS-Lauftext -->
     <div class="song-display-container">
-      <div id="https://api.laut.fm/station/hrp/current_song" class="song-scroll-text">Lade aktuellen Song...</div>
+      <div id="currentSong" class="song-scroll-text">Lade aktuellen Song...</div>
     </div>
     
     <div class="controls">
@@ -164,7 +160,6 @@
       </button>
     </div>
 
-    <!-- Zentrierter Infotext unter den Buttons -->
     <div class="powered-by">powered by laut.fm</div>
   </div>
 
@@ -173,6 +168,7 @@
   <script>
     var audio = document.getElementById('audioStream');
     var streamUrl = "https://stream.laut.fm/hrp";
+    // Neue API-Schnittstelle, um detaillierte Metadaten zu erhalten
     var apiUrl = "https://api.laut.fm/station/hrp/current_song";
 
     function playRadio() {
@@ -198,11 +194,31 @@
       fetch(apiUrl)
         .then(response => {
           if (!response.ok) throw new Error('Netzwerkfehler');
-          return response.text();
+          return response.json(); // Wir erwarten nun ein JSON-Array
         })
-        .then(track => {
-          if (track && track.trim() !== "") {
-            document.getElementById('currentSong').innerText = track;
+        .then(data => {
+          if (data && data.length > 0) {
+            var currentTrack = data[0]; // Das erste Element ist das aktuell laufende Lied
+            
+            var title = currentTrack.title || "Unbekannter Titel";
+            var artist = (currentTrack.artist && currentTrack.artist.name) ? currentTrack.artist.name : "Unbekannter Künstler";
+            var album = currentTrack.album || "";
+            var year = currentTrack.releaseyear || "";
+            
+            // Text zusammensetzen: Artist - Titel
+            var displayString = artist + " - " + title;
+            
+            // Wenn Album-Informationen vorhanden sind, anhängen
+            if (album.trim() !== "") {
+              displayString += " (Album: " + album + ")";
+            }
+            
+            // Wenn das Jahr vorhanden ist, anhängen
+            if (year && year.toString().trim() !== "") {
+              displayString += " [" + year + "]";
+            }
+            
+            document.getElementById('currentSong').innerText = displayString;
           } else {
             document.getElementById('currentSong').innerText = "HARD ROCK PALACE";
           }
@@ -213,7 +229,7 @@
     }
 
     updateSongInfo();
-    setInterval(updateSongInfo, 10000);
+    setInterval(updateSongInfo, 10000); // Aktualisiert alle 10 Sekunden
   </script>
 
 </body>
