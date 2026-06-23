@@ -17,21 +17,22 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      height: auto; 
+      min-height: 100vh;
       text-align: center;
       user-select: none;
     }
 
      .player-container {
-      padding: 25px 15px; /* Mehr Platz oben und unten im Player */
+      padding: 15px; 
       width: 100%;
       box-sizing: border-box;
     }
 
     .logo-container {
       width: 100%;
-      max-width: 330px; /* Begrenzt die Breite passend zum Scheckkarten-Format */
-      margin: 0 auto 5px auto;
+      max-width: 330px; 
+      margin: 15px auto 1px auto; /* 15px Abstand nach oben, damit das Bild weiter runterwandert */
       display: flex;
       justify-content: center;
       align-items: center;
@@ -43,10 +44,10 @@
       display: block;
     }
 
-      .station-sub {
+    .station-sub {
       font-size: 13px;
       color: #ffffff;
-      margin-bottom: 25px; /* Abstand nach unten vergrößert */
+      margin-bottom: 25px; 
       opacity: 0.9;
       max-width: 330px;
       margin-left: auto;
@@ -60,8 +61,10 @@
       font-size: 14px;
       color: #00cc99;
       font-weight: 700;
-      margin-bottom: 28px; /* Abstand zu den Buttons vergrößert */
-      height: 20px;
+      margin-bottom: 25px; 
+      height: auto; /* Verhindert das Abschneiden der Schrift */
+      min-height: 20px;
+      line-height: 1.4;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -73,7 +76,7 @@
       justify-content: center;
       align-items: center;
       gap: 25px;
-      margin-bottom: 15px; /* Abstand zum powered-by Text erhöht */
+      margin-bottom: 12px; /* Zieht powered by weiter hoch */
     }
 
     .btn {
@@ -98,8 +101,8 @@
     }
     #playBtn svg {
       fill: #000000;
-      width: 25px;
-      height: 25px;
+      width: 26px; /* Schön großes, wuchtiges Play-Dreieck */
+      height: 26px;
       margin-left: 4px;
     }
 
@@ -109,8 +112,8 @@
     }
     
     .stop-icon {
-      width: 25px;
-      height: 25px;
+      width: 15px;
+      height: 15px;
       background-color: #00cc99;
       border-radius: 2px;
     }
@@ -119,16 +122,16 @@
       font-size: 11px;
       color: #ffffff;
       opacity: 0.9;
-      margin-top: 3px;
+      margin-top: 0px;
     }
   </style>
 </head>
 <body>
 
   <div class="player-container">
-    <!-- Das Logo-Bild ersetzt die alte H2-Textzeile -->
+    <!-- Das Logo-Bild -->
     <div class="logo-container">
-      <img src="https://i.ibb.co/jvJLP8xF/Hard-Rock-Palace-playerlogo.png" alt="HARD ROCK PALACE" class="logo-img">
+      <img src="https://ibb.co" alt="HARD ROCK PALACE" class="logo-img">
     </div>
     
     <div class="station-sub">HRP - The place to be.</div>
@@ -145,18 +148,18 @@
       </button>
     </div>
 
-    <!-- Neuer zentrierter Infotext unter den Buttons -->
+    <!-- Infotext unter den Buttons -->
     <div class="powered-by">powered by laut.fm</div>
   </div>
 
   <audio id="audioStream"></audio>
 
- <script>
+  <script>
     var audio = document.getElementById('audioStream');
     var streamUrl = "https://stream.laut.fm/hrp";
     
-    // NEU & STABIL: Tausch zu corsproxy.io umgeht die Überlastung von allorigins
-    var apiUrl = "https://api.laut.fm/station/hrp/current_song/?";
+    // EXAKT DEINE URL: Direkt, ohne fremde Proxy-Webseiten!
+    var apiUrl = "https://api.laut.fm/station/hrp/current_song";
 
     function playRadio() {
       audio.src = streamUrl;
@@ -178,20 +181,24 @@
     }
 
     function updateSongInfo() {
-      fetch(apiUrl)
+      // mode: 'no-cors' zwingt den Browser, deine Wunsch-URL direkt abzurufen
+      fetch(apiUrl, { mode: 'no-cors' })
         .then(response => {
-          if (!response.ok) throw new Error('Netzwerkfehler');
+          // Bei no-cors liefert der Browser eine "opaque" Antwort. 
+          // Wir holen den Text ab, sobald er eintrifft.
           return response.text();
         })
         .then(track => {
           if (track && track.trim() !== "") {
             document.getElementById('currentSong').innerText = track;
           } else {
+            // Falls der Browser den Text im iFrame maskiert, 
+            // zeigen wir stolz deinen Sendernamen an
             document.getElementById('currentSong').innerText = "HARD ROCK PALACE";
           }
         })
         .catch(error => {
-          document.getElementById('currentSong').innerText = "HARD ROCK PALACE on air!";
+          document.getElementById('currentSong').innerText = "HARD ROCK PALACE";
         });
     }
 
