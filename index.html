@@ -151,10 +151,12 @@
 
   <audio id="audioStream"></audio>
 
-  <script>
+ <script>
     var audio = document.getElementById('audioStream');
     var streamUrl = "https://stream.laut.fm/hrp";
-    var apiUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent("https://laut.fm");
+    
+    // NEU & STABIL: Tausch zu corsproxy.io umgeht die Überlastung von allorigins
+    var apiUrl = "https://corsproxy.io/?" + encodeURIComponent("https://laut.fm");
 
     function playRadio() {
       audio.src = streamUrl;
