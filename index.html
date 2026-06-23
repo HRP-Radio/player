@@ -52,7 +52,7 @@
       margin-left: auto;
       margin-right: auto;
       text-align: left; /* Text startet wieder links */
-      padding-left: 155px; /* Schiebt den Text exakt unter den Schädel */
+      padding-left: 110px; /* Schiebt den Text exakt unter den Schädel */
       box-sizing: border-box;
     }
 
@@ -153,58 +153,28 @@
   <audio id="audioStream"></audio>
 
   <script>
-    var audio = document.getElementById('audioStream');
-    var streamUrl = "https://stream.laut.fm/hrp";
+var apiUrl = "https://allorigins.win" + encodeURIComponent("https://stream.laut.fm/hrp");
 
-    function playRadio() {
-      audio.src = streamUrl;
-      audio.load();
-      
-      var playPromise = audio.play();
-      if (playPromise !== undefined) {
-        playPromise.then(function() {
-          console.log("Stream gestartet.");
-        }).catch(function(error) {
-          console.log("Wiedergabe blockiert:", error);
-        });
-      }
-    }
-
-    function stopRadio() {
-      audio.pause();
-      audio.src = ""; 
-    }
-
-    // Der absolut sichere Weg für Google Sites (JSONP / Callback)
     function updateSongInfo() {
-      // Entfernt das alte Skript-Element, falls vorhanden
-      var oldScript = document.getElementById('lautfm-jsonp');
-      if (oldScript) {
-        oldScript.parentNode.removeChild(oldScript);
-      }
-
-      // Erstellt ein frisches Skript-Element für die Abfrage
-      var script = document.createElement('script');
-      script.id = 'lautfm-jsonp';
-      // Wichtig: ?callback=showSong sagt laut.fm, wie die Antwort übergeben werden soll
-      script.src = "https://laut.fm" + new Date().getTime();
-      document.body.appendChild(script);
-    }
-
-    // Diese Funktion wird von laut.fm aufgerufen, sobald die Daten da sind
-    function showSong(track) {
-      if (track && track.trim() !== "") {
-        document.getElementById('currentSong').innerText = track;
-      } else {
-        document.getElementById('currentSong').innerText = "HARD ROCK PALACE";
-      }
+      fetch(apiUrl)
+        .then(response => response.text())
+        .then(track => {
+          if (track && track.trim() !== "") {
+            document.getElementById('currentSong').innerText = track;
+          } else {
+            document.getElementById('currentSong').innerText = "HARD ROCK PALACE";
+          }
+        })
+        .catch(error => {
+          document.getElementById('currentSong').innerText = "HARD ROCK PALACE on air!";
+        });
     }
 
     // Sofort beim Laden starten
     updateSongInfo();
     
-    // Alle 15 Sekunden im Hintergrund aktualisieren
-    setInterval(updateSongInfo, 15000);
+    // Alle 10 Sekunden im Hintergrund aktualisieren
+    setInterval(updateSongInfo, 10000);
   </script>
 </body>
 </html>
