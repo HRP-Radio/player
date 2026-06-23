@@ -31,7 +31,7 @@
     .logo-container {
       width: 100%;
       max-width: 330px; /* Begrenzt die Breite passend zum Scheckkarten-Format */
-      margin: 0 auto 2px auto;
+      margin: 0 auto 5px auto;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -43,7 +43,7 @@
       display: block;
     }
 
-    .station-sub {
+   .station-sub {
       font-size: 13px;
       color: #ffffff;
       margin-bottom: 15px;
@@ -52,7 +52,7 @@
       margin-left: auto;
       margin-right: auto;
       text-align: left; /* Text startet wieder links */
-      padding-left: 110px; /* Schiebt den Text exakt unter den Schädel */
+      padding-left: 100px; /* Schiebt den Text exakt unter den Schädel */
       box-sizing: border-box;
     }
 
@@ -126,16 +126,15 @@
 <body>
 
   <div class="player-container">
-    <!-- Das Logo-Bild -->
+    <!-- Das Logo-Bild ersetzt die alte H2-Textzeile -->
     <div class="logo-container">
       <img src="https://i.ibb.co/jvJLP8xF/Hard-Rock-Palace-playerlogo.png" alt="HARD ROCK PALACE" class="logo-img">
     </div>
     
-    <!-- Zentrierter Text aber um 20px nach rechts verschoben -->
     <div class="station-sub">HRP - The place to be.</div>
     
     <!-- Hier wird das Lied live in Grün angezeigt -->
-    <div id="https://api.laut.fm/station/hrp/current_song" class="song-display">Lade aktuellen Song...</div>
+    <div id="currentSong" class="song-display">Lade aktuellen Song...</div>
     
     <div class="controls">
       <button id="playBtn" class="btn" onclick="playRadio()">
@@ -146,18 +145,42 @@
       </button>
     </div>
 
-    <!-- Zentrierter Infotext unter den Buttons -->
+    <!-- Neuer zentrierter Infotext unter den Buttons -->
     <div class="powered-by">powered by laut.fm</div>
   </div>
 
   <audio id="audioStream"></audio>
 
   <script>
-var apiUrl = "https://allorigins.win" + encodeURIComponent("https://stream.laut.fm/hrp");
+    var audio = document.getElementById('audioStream');
+    var streamUrl = "https://stream.laut.fm/hrp";
+    var apiUrl = "https://api.laut.fm/station/hrp/current_song";
+
+    function playRadio() {
+      audio.src = streamUrl;
+      audio.load();
+      
+      var playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.then(function() {
+          console.log("Stream gestartet.");
+        }).catch(function(error) {
+          console.log("Wiedergabe blockiert:", error);
+        });
+      }
+    }
+
+    function stopRadio() {
+      audio.pause();
+      audio.src = ""; 
+    }
 
     function updateSongInfo() {
       fetch(apiUrl)
-        .then(response => response.text())
+        .then(response => {
+          if (!response.ok) throw new Error('Netzwerkfehler');
+          return response.text();
+        })
         .then(track => {
           if (track && track.trim() !== "") {
             document.getElementById('currentSong').innerText = track;
@@ -170,11 +193,9 @@ var apiUrl = "https://allorigins.win" + encodeURIComponent("https://stream.laut.
         });
     }
 
-    // Sofort beim Laden starten
     updateSongInfo();
-    
-    // Alle 10 Sekunden im Hintergrund aktualisieren
     setInterval(updateSongInfo, 10000);
   </script>
+
 </body>
 </html>
