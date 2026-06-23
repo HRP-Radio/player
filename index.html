@@ -55,31 +55,16 @@
       padding-right: 10px;
     }
 
-    /* Der feste sichtbare Bereich für den Lauftext */
-    .song-display-container {
+   .song-display {
       font-size: 14px;
       color: #00cc99;
       font-weight: 700;
       margin-bottom: 15px;
       height: 20px;
-      overflow: hidden; /* Schneidet Text außerhalb ab */
-      position: relative;
+      overflow: hidden;
+      text-overflow: ellipsis;
       white-space: nowrap;
-      width: 100%;
-    }
-
-    /* Das animierte Textband im Inneren */
-    .song-scroll-text {
-      display: inline-block;
-      position: absolute;
-      padding-left: 100%; /* Startet komplett außerhalb am rechten Rand */
-      animation: marquee 15s linear infinite;
-    }
-
-    /* Die CSS-Lauftext-Animation */
-    @keyframes marquee {
-      0% { transform: translate3d(0, 0, 0); }
-      100% { transform: translate3d(-100%, 0, 0); }
+      padding: 0 10px;
     }
 
     .controls {
