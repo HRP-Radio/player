@@ -219,3 +219,213 @@
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HARD ROCK PALACE - Player</title>
+  <style>
+    @import url('https://googleapis.com');
+    
+    body, html {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #000000;
+      font-family: 'Lexend', sans-serif !important;
+      color: #b7a35a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+      user-select: none;
+    }
+
+    .player-container {
+      padding: 15px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .logo-container {
+      width: 100%;
+      max-width: 330px; /* Begrenzt die Breite passend zum Scheckkarten-Format */
+      margin: 0 auto 2px auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .logo-img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .station-sub {
+      font-size: 13px;
+      color: #ffffff;
+      margin-bottom: 15px;
+      opacity: 0.9;
+      /* Richtet den Text am rechten Rand des Logo-Containers aus (unter PALACE) */
+      max-width: 330px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: right;
+      padding-right: 10px; /* Minimaler Abstand vom äußersten rechten Rand */
+    }
+
+    .song-display {
+      font-size: 14px;
+      color: #00cc99;
+      font-weight: 700;
+      margin-bottom: 15px;
+      height: 20px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      padding: 0 10px;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 25px;
+      margin-bottom: 15px;
+    }
+
+    .btn {
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: transform 0.2s;
+      box-sizing: border-box;
+    }
+
+    .btn:hover {
+      transform: scale(1.08);
+    }
+
+    #playBtn {
+      background-color: #00cc99;
+      border: none;
+    }
+    #playBtn svg {
+      fill: #000000;
+      width: 24px;
+      height: 24px;
+      margin-left: 4px;
+    }
+
+    #stopBtn {
+      background-color: transparent;
+      border: 2px solid #00cc99;
+    }
+    
+    .stop-icon {
+      width: 18px;
+      height: 18px;
+      background-color: #00cc99;
+      border-radius: 2px;
+    }
+
+    .powered-by {
+      font-size: 13px;
+      color: #ffffff;
+      opacity: 0.9;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="player-container">
+    <!-- Das Logo-Bild -->
+    <div class="logo-container">
+      <img src="https://i.ibb.co/jvJLP8xF/Hard-Rock-Palace-playerlogo.png" alt="HARD ROCK PALACE" class="logo-img">
+    </div>
+    
+    <!-- Rechtsbündig unter dem Wort PALACE platziert -->
+    <div class="station-sub">HRP - The place to be.</div>
+    
+    <!-- Hier wird das Lied live in Grün angezeigt -->
+    <div id="https://api.laut.fm/station/hrp/current_song" class="song-display">Lade aktuellen Song...</div>
+    
+    <div class="controls">
+      <button id="playBtn" class="btn" onclick="playRadio()">
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+      <button id="stopBtn" class="btn" onclick="stopRadio()">
+        <div class="stop-icon"></div>
+      </button>
+    </div>
+
+    <!-- Zentrierter Infotext unter den Buttons -->
+    <div class="powered-by">powered by laut.fm</div>
+  </div>
+
+  <audio id="audioStream"></audio>
+
+  <script>
+    var audio = document.getElementById('audioStream');
+    var streamUrl = "https://stream.laut.fm/hrp";
+    var apiUrl = "https://api.laut.fm/station/hrp/current_song";
+
+    function playRadio() {
+      audio.src = streamUrl;
+      audio.load();
+      
+      var playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.then(function() {
+          console.log("Stream gestartet.");
+        }).catch(function(error) {
+          console.log("Wiedergabe blockiert:", error);
+        });
+      }
+    }
+
+    function stopRadio() {
+      audio.pause();
+      audio.src = ""; 
+    }
+
+    function updateSongInfo() {
+      fetch(apiUrl)
+        .then(response => {
+          if (!response.ok) throw new Error('Netzwerkfehler');
+          return response.text();
+        })
+        .then(track => {
+          if (track && track.trim() !== "") {
+            document.getElementById('currentSong').innerText = track;
+          } else {
+            document.getElementById('currentSong').innerText = "HARD ROCK PALACE";
+          }
+        })
+        .catch(error => {
+          document.getElementById('currentSong').innerText = "HARD ROCK PALACE on air!";
+        });
+    }
+
+    updateSongInfo();
+    setInterval(updateSongInfo, 10000);
+  </script>
+
+</body>
+</html>
