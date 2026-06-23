@@ -156,7 +156,7 @@
     var streamUrl = "https://stream.laut.fm/hrp";
     
     // NEU & STABIL: Tausch zu corsproxy.io umgeht die Überlastung von allorigins
-    var apiUrl = "https://corsproxy.io/?" + encodeURIComponent("https://api.laut.fm/station/hrp/current_song");
+    var apiUrl = "https://api.laut.fm/station/hrp/current_song/?";
 
     function playRadio() {
       audio.src = streamUrl;
