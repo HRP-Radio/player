@@ -24,7 +24,7 @@
     }
 
      .player-container {
-      padding: 15px; 
+      padding: 10px 15px; 
       width: 100%;
       box-sizing: border-box;
     }
@@ -32,7 +32,7 @@
     .logo-container {
       width: 100%;
       max-width: 330px; 
-      margin: 15px auto 1px auto; /* Bild weiter nach unten verschoben */
+      margin: 12px auto 1px auto; /* Logo um exakt 3px nach oben gesetzt */
       display: flex;
       justify-content: center;
       align-items: center;
@@ -47,13 +47,13 @@
     .station-sub {
       font-size: 13px;
       color: #ffffff;
-      margin-bottom: 25px; 
+      margin-bottom: 22px; /* Songtitel um exakt 3px nach oben geholt */
       opacity: 0.9;
       max-width: 330px;
       margin-left: auto;
       margin-right: auto;
       text-align: left; 
-      padding-left: 103px; /* Text perfekt rechts neben der Schädelkante */
+      padding-left: 102px; 
       box-sizing: border-box;
     }
 
@@ -61,14 +61,14 @@
       font-size: 14px;
       color: #00cc99;
       font-weight: 700;
-      margin-bottom: 25px; 
-      height: auto; 
-      min-height: 20px;
-      line-height: 1.4; /* Schrift wird oben und unten NICHT mehr abgeschnitten */
+      margin-bottom: 22px; 
+      height: 24px; 
+      line-height: 24px; /* Verhindert das Abschneiden der Schrift oben/unten */
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
       padding: 0 10px;
+      box-sizing: border-box;
     }
 
      .controls {
@@ -76,12 +76,12 @@
       justify-content: center;
       align-items: center;
       gap: 25px;
-      margin-bottom: 12px; /* Powered-by Text weiter nach oben gezogen */
+      margin-bottom: 10px; /* Holt powered by deutlich weiter nach oben */
     }
 
     .btn {
-      width: 55px;
-      height: 55px;
+      width: 44px; /* Buttons kompakter gestaltet */
+      height: 44px;
       border-radius: 50%;
       cursor: pointer;
       display: flex;
@@ -101,9 +101,9 @@
     }
     #playBtn svg {
       fill: #000000;
-      width: 26px; /* Schön großes, wuchtiges Play-Dreieck */
-      height: 26px;
-      margin-left: 4px;
+      width: 24px; /* Wuchtiges, großes Play-Dreieck bleibt erhalten */
+      height: 24px;
+      margin-left: 3px;
     }
 
     #stopBtn {
@@ -112,8 +112,8 @@
     }
     
     .stop-icon {
-      width: 15px;
-      height: 15px;
+      width: 13px;
+      height: 13px;
       background-color: #00cc99;
       border-radius: 2px;
     }
@@ -136,8 +136,8 @@
     
     <div class="station-sub">HRP - The place to be.</div>
     
-    <!-- Hier wird das Lied live in Grün angezeigt (wird via Skript befüllt) -->
-    <div id="api_hrp_current_song" class="song-display">Lade aktuellen Song...</div>
+    <!-- Hier wird das Lied live in Grün angezeigt -->
+    <div id="currentSong" class="song-display">Lade aktuellen Song...</div>
     
     <div class="controls">
       <button id="playBtn" class="btn" onclick="playRadio()">
@@ -154,10 +154,12 @@
 
   <audio id="audioStream"></audio>
 
-  <!-- Das Radio-Skript für Ton -->
   <script>
     var audio = document.getElementById('audioStream');
-    var streamUrl = "https://stream.laut.fm/pro";
+    var streamUrl = "https://stream.laut.fm/hrp";
+    
+    // HIER FLIESST DEINE WUNSCH-URL DIREKT EIN:
+    var apiUrl = "https://allorigins.win" + encodeURIComponent("https://api.laut.fm/station/hrp/current_song");
 
     function playRadio() {
       audio.src = streamUrl;
@@ -177,10 +179,28 @@
       audio.pause();
       audio.src = ""; 
     }
-  </script>
 
-  <!-- Das offizielle, unblockbare laut.fm-Skript für die Songanzeige -->
-  <script src="https://api.laut.fm/station/hrp/current_song"></script>
+    function updateSongInfo() {
+      fetch(apiUrl)
+        .then(response => {
+          if (!response.ok) throw new Error('Netzwerkfehler');
+          return response.text();
+        })
+        .then(track => {
+          if (track && track.trim() !== "") {
+            document.getElementById('currentSong').innerText = track;
+          } else {
+            document.getElementById('currentSong').innerText = "HARD ROCK PALACE";
+          }
+        })
+        .catch(error => {
+          document.getElementById('currentSong').innerText = "HARD ROCK PALACE on air!";
+        });
+    }
+
+    updateSongInfo();
+    setInterval(updateSongInfo, 10000);
+  </script>
 
 </body>
 </html>
