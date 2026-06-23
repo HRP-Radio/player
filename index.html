@@ -31,7 +31,7 @@
     .logo-container {
       width: 100%;
       max-width: 330px; /* Begrenzt die Breite passend zum Scheckkarten-Format */
-      margin: 0 auto 3px auto;
+      margin: 0 auto 5px auto;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -52,7 +52,7 @@
       margin-left: auto;
       margin-right: auto;
       text-align: left; 
-      padding-left: 136px; 
+      padding-left: 103px; 
       box-sizing: border-box;
     }
 
@@ -73,7 +73,7 @@
       justify-content: center;
       align-items: center;
       gap: 25px;
-      margin-bottom: 20px; /* Abstand zum powered-by Text erhöht */
+      margin-bottom: 15px; /* Abstand zum powered-by Text erhöht */
     }
 
     .btn {
@@ -98,8 +98,8 @@
     }
     #playBtn svg {
       fill: #000000;
-      width: 15px;
-      height: 15px;
+      width: 25px;
+      height: 25px;
       margin-left: 4px;
     }
 
@@ -109,8 +109,8 @@
     }
     
     .stop-icon {
-      width: 15px;
-      height: 15px;
+      width: 25px;
+      height: 25px;
       background-color: #00cc99;
       border-radius: 2px;
     }
@@ -156,7 +156,7 @@
     var streamUrl = "https://stream.laut.fm/hrp";
     
     // NEU & STABIL: Tausch zu corsproxy.io umgeht die Überlastung von allorigins
-    var apiUrl = "https://corsproxy.io/?" + encodeURIComponent("https://laut.fm");
+    var apiUrl = "https://corsproxy.io/?" + encodeURIComponent("https://api.laut.fm/station/hrp/current_song");
 
     function playRadio() {
       audio.src = streamUrl;
