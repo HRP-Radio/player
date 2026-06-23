@@ -154,8 +154,7 @@
 
   <script>
     var audio = document.getElementById('audioStream');
-    var streamUrl = "https://stream.laut.fm/hrp";
-    var apiUrl = "https://api.laut.fm/station/hrp/current_song";
+    var streamUrl = "https://laut.fm";
 
     function playRadio() {
       audio.src = streamUrl;
@@ -176,27 +175,36 @@
       audio.src = ""; 
     }
 
+    // Der absolut sichere Weg für Google Sites (JSONP / Callback)
     function updateSongInfo() {
-      fetch("https://api.laut.fm/station/hrp/current_song")
-        .then(response => {
-          if (!response.ok) throw new Error('Netzwerkfehler');
-          return response.text();
-        })
-        .then(track => {
-          if (track && track.trim() !== "") {
-            document.getElementById('currentSong').innerText = track;
-          } else {
-            document.getElementById('currentSong').innerText = "HARD ROCK PALACE";
-          }
-        })
-        .catch(error => {
-          document.getElementById('currentSong').innerText = "HARD ROCK PALACE on air!";
-        });
+      // Entfernt das alte Skript-Element, falls vorhanden
+      var oldScript = document.getElementById('lautfm-jsonp');
+      if (oldScript) {
+        oldScript.parentNode.removeChild(oldScript);
+      }
+
+      // Erstellt ein frisches Skript-Element für die Abfrage
+      var script = document.createElement('script');
+      script.id = 'lautfm-jsonp';
+      // Wichtig: ?callback=showSong sagt laut.fm, wie die Antwort übergeben werden soll
+      script.src = "https://laut.fm" + new Date().getTime();
+      document.body.appendChild(script);
     }
 
-    updateSongInfo();
-    setInterval(updateSongInfo, 10000);
-  </script>
+    // Diese Funktion wird von laut.fm aufgerufen, sobald die Daten da sind
+    function showSong(track) {
+      if (track && track.trim() !== "") {
+        document.getElementById('currentSong').innerText = track;
+      } else {
+        document.getElementById('currentSong').innerText = "HARD ROCK PALACE";
+      }
+    }
 
+    // Sofort beim Laden starten
+    updateSongInfo();
+    
+    // Alle 15 Sekunden im Hintergrund aktualisieren
+    setInterval(updateSongInfo, 15000);
+  </script>
 </body>
 </html>
