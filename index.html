@@ -23,23 +23,30 @@
     }
 
     .player-container {
-      padding: 20px;
+      padding: 15px;
       width: 100%;
       box-sizing: border-box;
     }
 
-    h2 {
-      margin: 0 0 3px 0;
-      font-size: 24px;
-      letter-spacing: 1px;
-      color: #b7a35a;
-      font-weight: 700;
+    .logo-container {
+      width: 100%;
+      max-width: 330px; /* Begrenzt die Breite passend zum Scheckkarten-Format */
+      margin: 0 auto 5px auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .logo-img {
+      width: 100%;
+      height: auto;
+      display: block;
     }
 
     .station-sub {
       font-size: 13px;
       color: #ffffff;
-      margin-bottom: 15px;
+      margin-bottom: 12px;
       opacity: 0.9;
     }
 
@@ -47,7 +54,7 @@
       font-size: 14px;
       color: #00cc99;
       font-weight: 700;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       height: 20px;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -60,11 +67,12 @@
       justify-content: center;
       align-items: center;
       gap: 25px;
+      margin-bottom: 15px;
     }
 
     .btn {
-      width: 60px;
-      height: 60px;
+      width: 55px;
+      height: 55px;
       border-radius: 50%;
       cursor: pointer;
       display: flex;
@@ -84,32 +92,43 @@
     }
     #playBtn svg {
       fill: #000000;
-      width: 26px;
-      height: 26px;
+      width: 24px;
+      height: 24px;
       margin-left: 4px;
     }
 
     #stopBtn {
-          background-color: transparent;
+      background-color: transparent;
       border: 2px solid #00cc99;
     }
     
     .stop-icon {
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
       background-color: #00cc99;
       border-radius: 2px;
+    }
+
+    .powered-by {
+      font-size: 13px;
+      color: #ffffff;
+      opacity: 0.9;
+      margin-top: 5px;
     }
   </style>
 </head>
 <body>
 
   <div class="player-container">
-    <h2>HARD ROCK PALACE</h2>
+    <!-- Das Logo-Bild ersetzt die alte H2-Textzeile -->
+    <div class="logo-container">
+      <img src="https://i.ibb.co/jvJLP8xF/Hard-Rock-Palace-playerlogo.png" alt="HARD ROCK PALACE" class="logo-img">
+    </div>
+    
     <div class="station-sub">HRP - The place to be.</div>
     
     <!-- Hier wird das Lied live in Grün angezeigt -->
-    <div id="currentSong" class="song-display">Verbinde mit api.laut.fm/station/hrp/current_song</div>
+    <div id="currentSong" class="song-display">Lade aktuellen Song...</div>
     
     <div class="controls">
       <button id="playBtn" class="btn" onclick="playRadio()">
@@ -119,51 +138,48 @@
         <div class="stop-icon"></div>
       </button>
     </div>
+
+    <!-- Neuer zentrierter Infotext unter den Buttons -->
+    <div class="powered-by">powered by laut.fm</div>
   </div>
 
-  <!-- Nativer Audio-Baustein OHNE blockierende Zusatzbefehle -->
   <audio id="audioStream"></audio>
 
   <script>
-
-     
     var audio = document.getElementById('audioStream');
-    
-    // HIER steht nun bombenfest Ihre korrekte Audio-Leitung!
     var streamUrl = "https://stream.laut.fm/hrp";
-    
-    // Die offizielle Datenschnittstelle für den Songtext
     var apiUrl = "https://api.laut.fm/station/hrp/current_song";
 
     function playRadio() {
-      // Lädt den Stream absolut frisch bei jedem Klick
       audio.src = streamUrl;
       audio.load();
       
       var playPromise = audio.play();
       if (playPromise !== undefined) {
         playPromise.then(function() {
-          console.log("Stream erfolgreich gestartet.");
+          console.log("Stream gestartet.");
         }).catch(function(error) {
-          console.log("Browser blockiert automatisches Abspielen:", error);
+          console.log("Wiedergabe blockiert:", error);
         });
       }
     }
 
     function stopRadio() {
       audio.pause();
-      audio.src = ""; // Kappt die Datenleitung vollständig
+      audio.src = ""; 
     }
 
     function updateSongInfo() {
       fetch(apiUrl)
-        .then(response => response.json())
-        .then(data => {
-          if (data && data.title) {
-            var artistName = (data.artist && data.artist.name) ? data.artist.name : "HARD ROCK PALACE";
-            document.getElementById('currentSong').innerText = artistName + " - " + data.title;
+        .then(response => {
+          if (!response.ok) throw new Error('Netzwerkfehler');
+          return response.text();
+        })
+        .then(track => {
+          if (track && track.trim() !== "") {
+            document.getElementById('currentSong').innerText = track;
           } else {
-            document.getElementById('currentSong').innerText = "Live Stream aktiv";
+            document.getElementById('currentSong').innerText = "HARD ROCK PALACE";
           }
         })
         .catch(error => {
@@ -175,23 +191,5 @@
     setInterval(updateSongInfo, 10000);
   </script>
 
-<script>
-(function() {
-    var channel = new BroadcastChannel('hrp_player_channel');
-    channel.postMessage('new_instance_opened');
-    
-    channel.onmessage = function(event) {
-        if (event.data === 'new_instance_opened') {
-            channel.postMessage('close_yourself');
-            window.focus(); 
-        }
-        if (event.data === 'close_yourself') {
-            window.close();
-        }
-    };
-})();
-</script>
-
-  
 </body>
 </html>
