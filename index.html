@@ -80,7 +80,7 @@
       justify-content: center;
       align-items: center;
       gap: 30px;
-      margin-bottom: 40px; /* Schafft Platz für den Text unten */
+      margin-bottom: 10px; /* ÄNDERUNG: Weniger Abstand, da der Text nun mitwandert */
     }
 
     .btn {
@@ -124,14 +124,12 @@
 
     /* Zwingt den Text ganz nach unten über die volle Breite */
     .powered-by {
-      position: absolute;
-      bottom: 12px;
-      left: 0;
+      position: static; /* ÄNDERUNG: Fließt jetzt direkt unter die Buttons */
       width: 100%;
       font-size: 12px;
       color: #ffffff;
       opacity: 0.9;
-      margin: 0;
+      margin: 20px 0 0 0; /* ÄNDERUNG: Schafft 20px Abstand nach oben zu den Buttons */
       padding: 0;
       text-align: center;
     }
@@ -159,8 +157,7 @@
       </button>
     </div>
 
-    <div class="powered-by">powered by laut.fm</div>
-  </div>
+    
     
     <!-- DIESE ZEILE HIER WIEDER EINFÜGEN -->
     <div class="powered-by">powered by laut.fm</div>
